@@ -53,7 +53,7 @@ class _GamePageState extends State<GamePage> {
       ?.map((e) => (e as List<dynamic>).cast<int>())
       .toList() ?? List.generate(4, (_) => List.generate(4, (_) => 0));
 
-  final Map<int, Color> _tileColor =  {
+  final Map<int, Color> _tileColor = {
     2: Colors.purple.shade50,
     4: Colors.purple.shade100,
     8: Colors.purple.shade300,
@@ -68,7 +68,8 @@ class _GamePageState extends State<GamePage> {
   };
   final Random _random = Random();
   late int _score = storage.read('score') ?? 0;
-  late int _highScore = storage.read('highScore') ?? 0; //TODO : Add highscore persistance
+  late int _highScore = storage.read('highScore') ??
+      0; //TODO : Add highscore persistance
   late int _highestTile = storage.read('highestTile') ?? 0;
   late bool _stillPlaying = storage.read('stillPlaying') ?? false;
 
@@ -83,10 +84,13 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+        backgroundColor: Colors.grey[300],
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .primary,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -106,130 +110,148 @@ class _GamePageState extends State<GamePage> {
             ],
           ),
         ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 20, 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 8.0),
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Text(
-                        'SCORE: $_highestTile',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 20, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 8.0),
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .primary,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Text(
+                              'SCORE: $_score',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 8.0),
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .primary,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Text(
+                              'BEST: $_highScore',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 8.0),
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Text(
-                        'BEST: $_highestTile',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-              onHorizontalDragEnd: (details) {
-                if (details.primaryVelocity! > 0) {
-                  setState(() {
-                    _swipeRight();
-                    _addRandomTwo();
-                    storage.write('grid', grid);
-                  });
-                } else if (details.primaryVelocity! < 0) {
-                  setState(() {
-                    _swipeLeft();
-                    _addRandomTwo();
-                    storage.write('grid', grid);
-                  });
-                }
-              },
-              onVerticalDragEnd: (details) {
-                if (details.primaryVelocity! > 0) {
-                  setState(() {
-                    _swipeDown();
-                    _addRandomTwo();
-                    storage.write('grid', grid);
-                  });
-                } else if (details.primaryVelocity! < 0) {
-                  setState(() {
-                    _swipeUp();
-                    _addRandomTwo();
-                    storage.write('grid', grid);
-                  });
-                }
-              },
-              child: SizedBox(
-                width: MediaQuery.sizeOf(context).width * 0.9,
-                height: MediaQuery.sizeOf(context).width * 0.9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[500],
-                    borderRadius: BorderRadius.circular(16.0),
                   ),
-                  child: GridView.builder(
-                padding: const EdgeInsets.all(16.0),
-                controller: ScrollController(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                ),
-                itemCount: 16,
-                itemBuilder: (context, index) {
-                  int row = index ~/ 4;
-                  int col = index % 4;
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Center(
-                      child: numberTile(grid[row][col]),
-                    ),
-                  );
-                },
-              ),
-            ),
-          )
-          ),])
-    ));
+                  GestureDetector(
+                      onHorizontalDragEnd: (details) {
+                        if (details.primaryVelocity! > 0) {
+                          setState(() {
+                            _swipeRight();
+                            if (_isGameOver()) {
+                              _showGameOverDialog();
+                            }
+                          });
+                        } else if (details.primaryVelocity! < 0) {
+                          setState(() {
+                            _swipeLeft();
+                            if (_isGameOver()) {
+                              _showGameOverDialog();
+                            }
+                          });
+                        }
+                      },
+                      onVerticalDragEnd: (details) {
+                        if (details.primaryVelocity! > 0) {
+                          setState(() {
+                            _swipeDown();
+                            if (_isGameOver()) {
+                              _showGameOverDialog();
+                            }
+                          });
+                        } else if (details.primaryVelocity! < 0) {
+                          setState(() {
+                            _swipeUp();
+                            if (_isGameOver()) {
+                              _showGameOverDialog();
+                            }
+                          });
+                        }
+                      },
+                      child: SizedBox(
+                        width: MediaQuery
+                            .sizeOf(context)
+                            .width * 0.9,
+                        height: MediaQuery
+                            .sizeOf(context)
+                            .width * 0.9,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[500],
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                          child: GridView.builder(
+                            padding: const EdgeInsets.all(16.0),
+                            controller: ScrollController(),
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              crossAxisSpacing: 8.0,
+                              mainAxisSpacing: 8.0,
+                            ),
+                            itemCount: 16,
+                            itemBuilder: (context, index) {
+                              int row = index ~/ 4;
+                              int col = index % 4;
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Center(
+                                  child: numberTile(grid[row][col]),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                  ),
+                ])
+        ));
   }
 
   Widget numberTile(int number) {
     return Container(
       decoration: BoxDecoration(
-        color: number == 0 ? Colors.grey[200] : _tileColor.containsKey(number) ? _tileColor[number] : Colors.yellow.shade600,
+        color: number == 0 ? Colors.grey[200] : _tileColor.containsKey(number)
+            ? _tileColor[number]
+            : Colors.yellow.shade600,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Center(
         child: Text(
           number == 0 ? '' : number.toString(),
-          style: const TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -245,10 +267,54 @@ class _GamePageState extends State<GamePage> {
       _addRandomTwo(2);
       _score = 0;
       _stillPlaying = false;
+      storage.write('grid', grid);
       storage.write('highScore', _highScore);
       storage.write('score', _score);
       storage.write('stillPlaying', _stillPlaying);
     });
+  }
+
+  bool _isGameOver() {
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        if (grid[i][j] == 0) return false;
+        if (i < 3 && grid[i][j] == grid[i + 1][j]) return false;
+        if (j < 3 && grid[i][j] == grid[i][j + 1]) return false;
+      }
+    }
+    return true;
+  }
+
+  bool _gridsAreEqual(List<List<int>> grid1, List<List<int>> grid2) {
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        if (grid1[i][j] != grid2[i][j]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  void _showGameOverDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Game Over!'),
+          content: const Text('You lost!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _resetGame();
+              },
+              child: const Text('Try again'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _addRandomTwo([int? amount]) {
@@ -311,127 +377,155 @@ class _GamePageState extends State<GamePage> {
   }
 
   void _swipeRight() {
-    if (kDebugMode) {print('Swipe Right');}
-      for (int i = 0; i < 4; i++) {
-        List<int> newRow = List.filled(4, 0);
-        int index = 3;
-        for (int j = 3; j >= 0; j--) {
-          if (grid[i][j] != 0) {
-            newRow[index] = grid[i][j];
-            index--;
-          }
-        }
-        for (int j = 3; j > 0; j--) {
-          if (newRow[j] == newRow[j - 1] && newRow[j] != 0) {
-            newRow[j] *= 2;
-            newRow[j - 1] = 0;
-            addScore(newRow[j]);
-          }
-        }
-        index = 3;
-        for (int j = 3; j >= 0; j--) {
-          if (newRow[j] != 0) {
-            grid[i][index] = newRow[j];
-            index--;
-          }
-        }
-        for (int j = index; j >= 0; j--) {
-          grid[i][j] = 0;
+    if (kDebugMode) {
+      print('Swipe Right');
+    }
+    List<List<int>> oldGrid = List.from(grid.map((row) => List<int>.from(row)));
+    for (int i = 0; i < 4; i++) {
+      List<int> newRow = List.filled(4, 0);
+      int index = 3;
+      for (int j = 3; j >= 0; j--) {
+        if (grid[i][j] != 0) {
+          newRow[index] = grid[i][j];
+          index--;
         }
       }
+      for (int j = 3; j > 0; j--) {
+        if (newRow[j] == newRow[j - 1] && newRow[j] != 0) {
+          newRow[j] *= 2;
+          newRow[j - 1] = 0;
+          addScore(newRow[j]);
+        }
+      }
+      index = 3;
+      for (int j = 3; j >= 0; j--) {
+        if (newRow[j] != 0) {
+          grid[i][index] = newRow[j];
+          index--;
+        }
+      }
+      for (int j = index; j >= 0; j--) {
+        grid[i][j] = 0;
+      }
+    }
+    if (!_gridsAreEqual(oldGrid, grid)) {
+      _addRandomTwo();
+      storage.write('grid', grid);
+    }
   }
 
   void _swipeLeft() {
-    if (kDebugMode) {print('Swipe Left');}
-      for (int i = 0; i < 4; i++) {
-        List<int> newRow = List.filled(4, 0);
-        int index = 0;
-        for (int j = 0; j < 4; j++) {
-          if (grid[i][j] != 0) {
-            newRow[index] = grid[i][j];
-            index++;
-          }
-        }
-        for (int j = 0; j < 3; j++) {
-          if (newRow[j] == newRow[j + 1] && newRow[j] != 0) {
-            newRow[j] *= 2;
-            newRow[j + 1] = 0;
-            addScore(newRow[j]);
-          }
-        }
-        index = 0;
-        for (int j = 0; j < 4; j++) {
-          if (newRow[j] != 0) {
-            grid[i][index] = newRow[j];
-            index++;
-          }
-        }
-        for (int j = index; j < 4; j++) {
-          grid[i][j] = 0;
+    if (kDebugMode) {
+      print('Swipe Left');
+    }
+    List<List<int>> oldGrid = List.from(grid.map((row) => List<int>.from(row)));
+    for (int i = 0; i < 4; i++) {
+      List<int> newRow = List.filled(4, 0);
+      int index = 0;
+      for (int j = 0; j < 4; j++) {
+        if (grid[i][j] != 0) {
+          newRow[index] = grid[i][j];
+          index++;
         }
       }
+      for (int j = 0; j < 3; j++) {
+        if (newRow[j] == newRow[j + 1] && newRow[j] != 0) {
+          newRow[j] *= 2;
+          newRow[j + 1] = 0;
+          addScore(newRow[j]);
+        }
+      }
+      index = 0;
+      for (int j = 0; j < 4; j++) {
+        if (newRow[j] != 0) {
+          grid[i][index] = newRow[j];
+          index++;
+        }
+      }
+      for (int j = index; j < 4; j++) {
+        grid[i][j] = 0;
+      }
+    }
+    if (!_gridsAreEqual(oldGrid, grid)) {
+      _addRandomTwo();
+      storage.write('grid', grid);
+    }
   }
 
   void _swipeUp() {
-    if (kDebugMode) {print('Swipe Up');}
-      for (int j = 0; j < 4; j++) {
-        List<int> newCol = List.filled(4, 0);
-        int index = 0;
-        for (int i = 0; i < 4; i++) {
-          if (grid[i][j] != 0) {
-            newCol[index] = grid[i][j];
-            index++;
-          }
-        }
-        for (int i = 0; i < 3; i++) {
-          if (newCol[i] == newCol[i + 1] && newCol[i] != 0) {
-            newCol[i] *= 2;
-            newCol[i + 1] = 0;
-            addScore(newCol[i]);
-          }
-        }
-        index = 0;
-        for (int i = 0; i < 4; i++) {
-          if (newCol[i] != 0) {
-            grid[i][j] = newCol[i];
-            index++;
-          }
-        }
-        for (int i = index; i < 4; i++) {
-          grid[i][j] = 0;
+    if (kDebugMode) {
+      print('Swipe Up');
+    }
+    List<List<int>> oldGrid = List.from(grid.map((row) => List<int>.from(row)));
+    for (int j = 0; j < 4; j++) {
+      List<int> newCol = List.filled(4, 0);
+      int index = 0;
+      for (int i = 0; i < 4; i++) {
+        if (grid[i][j] != 0) {
+          newCol[index] = grid[i][j];
+          index++;
         }
       }
+      for (int i = 0; i < 3; i++) {
+        if (newCol[i] == newCol[i + 1] && newCol[i] != 0) {
+          newCol[i] *= 2;
+          newCol[i + 1] = 0;
+          addScore(newCol[i]);
+        }
+      }
+      index = 0;
+      for (int i = 0; i < 4; i++) {
+        if (newCol[i] != 0) {
+          grid[i][j] = newCol[i];
+          index++;
+        }
+      }
+      for (int i = index; i < 4; i++) {
+        grid[i][j] = 0;
+      }
+    }
+    if (!_gridsAreEqual(oldGrid, grid)) {
+      _addRandomTwo();
+      storage.write('grid', grid);
+    }
   }
 
   void _swipeDown() {
-    if (kDebugMode) {print('Swipe Down');}
-      for (int j = 0; j < 4; j++) {
-        List<int> newCol = List.filled(4, 0);
-        int index = 3;
-        for (int i = 3; i >= 0; i--) {
-          if (grid[i][j] != 0) {
-            newCol[index] = grid[i][j];
-            index--;
-          }
-        }
-        for (int i = 3; i > 0; i--) {
-          if (newCol[i] == newCol[i - 1] && newCol[i] != 0) {
-            newCol[i] *= 2;
-            newCol[i - 1] = 0;
-            addScore(newCol[i]);
-          }
-        }
-        index = 3;
-        for (int i = 3; i >= 0; i--) {
-          if (newCol[i] != 0) {
-            grid[i][j] = newCol[i];
-            index--;
-          }
-        }
-        for (int i = index; i >= 0; i--) {
-          grid[i][j] = 0;
+    if (kDebugMode) {
+      print('Swipe Down');
+    }
+    List<List<int>> oldGrid = List.from(grid.map((row) => List<int>.from(row)));
+    for (int j = 0; j < 4; j++) {
+      List<int> newCol = List.filled(4, 0);
+      int index = 3;
+      for (int i = 3; i >= 0; i--) {
+        if (grid[i][j] != 0) {
+          newCol[index] = grid[i][j];
+          index--;
         }
       }
+      for (int i = 3; i > 0; i--) {
+        if (newCol[i] == newCol[i - 1] && newCol[i] != 0) {
+          newCol[i] *= 2;
+          newCol[i - 1] = 0;
+          addScore(newCol[i]);
+        }
+      }
+      index = 3;
+      for (int i = 3; i >= 0; i--) {
+        if (newCol[i] != 0) {
+          grid[i][j] = newCol[i];
+          index--;
+        }
+      }
+      for (int i = index; i >= 0; i--) {
+        grid[i][j] = 0;
+      }
+    }
+    if (!_gridsAreEqual(oldGrid, grid)) {
+      _addRandomTwo();
+      storage.write('grid', grid);
+    }
   }
 }
 
